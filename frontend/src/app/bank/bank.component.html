@@ -2,10 +2,17 @@
 
 <table border="1" cellpadding="5" cellspacing="0" width="100%">
   <tr>
-    <td colspan="2">
+    <td colspan="3">
       <button type="button" (click)="showAccountForm = !showAccountForm">
         {{ showAccountForm ? "Hủy" : "Tạo Tài Khoản" }}
       </button>
+      <!-- <button
+        type="button"
+        (click)="getAllTransactions()"
+        style="margin-left: 10px"
+      >
+        Xem Tất Cả Giao Dịch
+      </button> -->
     </td>
   </tr>
 </table>
@@ -99,7 +106,7 @@
         <button (click)="editAccount(account)">Sửa</button>
         <button (click)="deleteAccount(account.accID!)">Xóa</button>
         <button (click)="showTransactionForm(account)">Giao Dịch</button>
-        <button (click)="viewTransactions(account)">Lịch Sử</button>
+        <!-- <button (click)="viewTransactions(account)">Lịch Sử</button> -->
       </td>
     </tr>
   </tbody>
@@ -111,6 +118,10 @@
 <div *ngIf="showTransactionFormFlag && selectedAccount">
   <hr />
   <h3>Giao Dịch Cho Tài Khoản: {{ selectedAccount.customerName }}</h3>
+  <p>
+    <strong>Số dư hiện tại:</strong>
+    {{ selectedAccount.balance | currency : "VND" : "symbol" : "1.0-0" }}
+  </p>
   <form (ngSubmit)="performTransaction()" #transactionForm="ngForm">
     <table border="1" cellpadding="5" cellspacing="0">
       <tr>
@@ -122,8 +133,8 @@
             required
           >
             <option value="">Chọn loại</option>
-            <option value="1">Nạp tiền</option>
-            <option value="2">Rút tiền</option>
+            <option value="1">Nạp tiền (Deposit)</option>
+            <option value="2">Rút tiền (Withdraw)</option>
           </select>
         </td>
         <td><strong>Số tiền *</strong></td>
@@ -133,9 +144,8 @@
             [(ngModel)]="currentTransaction.transMoney"
             name="amount"
             required
-            min="1000"
-            step="1000"
-            size="15"
+            min="1"
+            placeholder="Nhập số tiền"
           />
         </td>
         <td>
@@ -159,14 +169,17 @@
     <thead>
       <tr bgcolor="#f0f0f0">
         <th>Mã GD</th>
+        <th>Mã TK</th>
         <th>Loại</th>
         <th>Số Tiền</th>
         <th>Ngày Giao Dịch</th>
+        <th>Thao Tác</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let transaction of accountTransactions">
         <td>{{ transaction.transID }}</td>
+        <td>{{ transaction.accID }}</td>
         <td>
           <span [style.color]="transaction.transType === 1 ? 'green' : 'red'">
             {{ transaction.transType === 1 ? "Nạp tiền" : "Rút tiền" }}
@@ -175,13 +188,69 @@
         <td align="right">
           {{ transaction.transMoney | currency : "VND" : "symbol" : "1.0-0" }}
         </td>
-        <td>{{ transaction.dateOfTrans | date : "dd/MM/yyyy HH:mm" }}</td>
+        <td>{{ transaction.dateOfTrans | date : "dd/MM/yyyy" }}</td>
+        <td>
+          <button
+            (click)="getTransactionById(transaction.transID!)"
+            [disabled]="!transaction.transID"
+          >
+            Chi Tiết
+          </button>
+        </td>
       </tr>
       <tr *ngIf="accountTransactions.length === 0">
-        <td colspan="4" align="center"><em>Chưa có giao dịch nào</em></td>
+        <td colspan="6" align="center"><em>Chưa có giao dịch nào</em></td>
       </tr>
     </tbody>
   </table>
   <br />
   <button (click)="closeTransactionHistory()">Đóng Lịch Sử</button>
+</div>
+
+<!-- Hiển thị tất cả giao dịch -->
+<div *ngIf="showAllTransactions">
+  <hr />
+  <h3>Tất Cả Giao Dịch Trong Hệ Thống</h3>
+  <table border="1" cellpadding="5" cellspacing="0" width="100%">
+    <thead>
+      <tr bgcolor="#f0f0f0">
+        <th>Mã GD</th>
+        <th>Mã TK</th>
+        <th>Loại</th>
+        <th>Số Tiền</th>
+        <th>Ngày Giao Dịch</th>
+        <th>Thao Tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let transaction of allTransactions">
+        <td>{{ transaction.transID }}</td>
+        <td>{{ transaction.accID }}</td>
+        <td>
+          <span [style.color]="transaction.transType === 1 ? 'green' : 'red'">
+            {{ transaction.transType === 1 ? "Nạp tiền" : "Rút tiền" }}
+          </span>
+        </td>
+        <td align="right">
+          {{ transaction.transMoney | currency : "VND" : "symbol" : "1.0-0" }}
+        </td>
+        <td>{{ transaction.dateOfTrans | date : "dd/MM/yyyy" }}</td>
+        <td>
+          <button
+            (click)="getTransactionById(transaction.transID!)"
+            [disabled]="!transaction.transID"
+          >
+            Chi Tiết
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="allTransactions.length === 0">
+        <td colspan="6" align="center">
+          <em>Chưa có giao dịch nào trong hệ thống</em>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <br />
+  <button (click)="closeAllTransactions()">Đóng Danh Sách</button>
 </div>

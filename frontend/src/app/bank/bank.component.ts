@@ -16,7 +16,7 @@ interface Transaction {
   accID?: number;
   transMoney?: number;
   transType?: number; // 1 = Deposit, 2 = Withdraw
-  dateOfTrans?: string;
+  dateOfTrans?: string; // LocalDate từ backend sẽ được serialize thành string
 }
 
 @Component({
@@ -38,9 +38,11 @@ export class BankComponent implements OnInit {
   selectedAccount: Account | null = null;
   currentTransaction: Transaction = { transMoney: 0, transType: 1 };
   accountTransactions: Transaction[] = [];
+  allTransactions: Transaction[] = [];
   showAccountForm = false;
   showTransactionFormFlag = false;
   showTransactionHistory = false;
+  showAllTransactions = false;
   editingAccount = false;
 
   constructor(private http: HttpClient) {}
@@ -114,27 +116,42 @@ export class BankComponent implements OnInit {
 
   performTransaction() {
     if (this.selectedAccount && this.currentTransaction.transMoney) {
+      // Validation cho withdraw
+      if (
+        this.currentTransaction.transType === 2 &&
+        this.currentTransaction.transMoney > this.selectedAccount.balance!
+      ) {
+        alert('Số tiền rút không được vượt quá số dư hiện tại!');
+        return;
+      }
+
+      // Cập nhật endpoint để khớp với TransactionController
       const endpoint =
         this.currentTransaction.transType === 1
-          ? `${this.apiUrl}/accounts/${this.selectedAccount.accID}/deposit`
-          : `${this.apiUrl}/accounts/${this.selectedAccount.accID}/withdraw`;
+          ? `${this.apiUrl}/transactions/deposit`
+          : `${this.apiUrl}/transactions/withdraw`;
 
-      this.http
-        .post(endpoint, { amount: this.currentTransaction.transMoney })
-        .subscribe({
-          next: () => {
-            this.loadAccounts();
-            this.cancelTransaction();
-            alert('Giao dịch thành công!');
-          },
-          error: (error) => {
-            console.error('Lỗi thực hiện giao dịch:', error);
-            alert(
-              'Lỗi giao dịch: ' +
-                (error.error?.message || 'Không thể thực hiện giao dịch')
-            );
-          },
-        });
+      // Tạo TransactionDTO object theo đúng format mà API mong đợi
+      const transactionDTO = {
+        accID: this.selectedAccount.accID,
+        transMoney: this.currentTransaction.transMoney,
+        transType: this.currentTransaction.transType,
+      };
+
+      this.http.post(endpoint, transactionDTO).subscribe({
+        next: (response) => {
+          console.log('Transaction response:', response);
+          this.loadAccounts();
+          this.cancelTransaction();
+          alert('Giao dịch thành công!');
+        },
+        error: () => {
+          alert('Lỗi giao dịch:');
+          window.location.reload();
+        },
+      });
+    } else {
+      alert('Vui lòng nhập đầy đủ thông tin giao dịch!');
     }
   }
 
@@ -146,7 +163,7 @@ export class BankComponent implements OnInit {
 
     this.http
       .get<Transaction[]>(
-        `${this.apiUrl}/accounts/${account.accID}/transactions`
+        `${this.apiUrl}/transactions/account/${account.accID}`
       )
       .subscribe({
         next: (data) => (this.accountTransactions = data),
@@ -164,6 +181,36 @@ export class BankComponent implements OnInit {
     this.showTransactionHistory = false;
     this.selectedAccount = null;
     this.accountTransactions = [];
+  }
+
+  getAllTransactions() {
+    this.http.get<Transaction[]>(`${this.apiUrl}/transactions`).subscribe({
+      next: (data) => {
+        this.allTransactions = data;
+        this.showAllTransactions = true;
+        this.showAccountForm = false;
+        this.showTransactionFormFlag = false;
+        this.showTransactionHistory = false;
+        console.log('Tất cả giao dịch:', data);
+      },
+      error: (error) => console.error('Lỗi tải tất cả giao dịch:', error),
+    });
+  }
+
+  closeAllTransactions() {
+    this.showAllTransactions = false;
+    this.allTransactions = [];
+  }
+
+  getTransactionById(transID: number) {
+    this.http
+      .get<Transaction>(`${this.apiUrl}/transactions/${transID}`)
+      .subscribe({
+        next: (data) => {
+          console.log('Chi tiết giao dịch:', data);
+        },
+        error: (error) => console.error('Lỗi tải chi tiết giao dịch:', error),
+      });
   }
 
   cancelAccountForm() {

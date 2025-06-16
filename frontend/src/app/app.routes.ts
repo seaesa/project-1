@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { StudentComponent } from './student.component';
-import { BankComponent } from './bank.component';
+import { StudentComponent } from './student/student.component';
+import { BankComponent } from './bank/bank.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/sinh-vien', pathMatch: 'full' },
