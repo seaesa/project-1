@@ -1,0 +1,244 @@
+### API Testing cho Hệ thống Quản lý Sinh viên - Môn học và Ngân hàng
+### Base URL: http://localhost:8080/api
+
+#==============================================
+# MODULE QUẢN LÝ SINH VIÊN - MÔN HỌC
+#==============================================
+
+### 1. Lấy danh sách tất cả sinh viên
+GET http://localhost:8080/api/students
+Content-Type: application/json
+
+### 2. Tạo sinh viên mới
+POST http://localhost:8080/api/students
+Content-Type: application/json
+
+{
+  "name": "Nguyễn Văn An",
+  "address": "123 Đường ABC, Quận 1, TP.HCM",
+  "phone": "0901234567",
+  "dob": "2001-05-15"
+}
+
+### 3. Lấy thông tin sinh viên theo ID
+GET http://localhost:8080/api/students/1
+Content-Type: application/json
+
+### 4. Cập nhật thông tin sinh viên
+PUT http://localhost:8080/api/students/1
+Content-Type: application/json
+
+{
+  "name": "Nguyễn Văn An",
+  "address": "456 Đường DEF, Quận 2, TP.HCM",
+  "phone": "0901234568",
+  "dob": "2001-05-15"
+}
+
+### 5. Tìm kiếm sinh viên theo tên
+GET http://localhost:8080/api/students/search?name=An
+Content-Type: application/json
+
+### 6. Lấy danh sách môn học của sinh viên
+GET http://localhost:8080/api/students/1/courses
+Content-Type: application/json
+
+### 7. Xóa sinh viên
+DELETE http://localhost:8080/api/students/1
+
+#==============================================
+# QUẢN LÝ MÔN HỌC
+#==============================================
+
+### 8. Lấy danh sách tất cả môn học
+GET http://localhost:8080/api/courses
+Content-Type: application/json
+
+### 9. Tạo môn học mới cho sinh viên
+POST http://localhost:8080/api/courses
+Content-Type: application/json
+
+{
+  "name": "Toán Cao Cấp",
+  "score": 8.5,
+  "studentId": 1
+}
+
+### 10. Lấy thông tin môn học theo ID
+GET http://localhost:8080/api/courses/1
+Content-Type: application/json
+
+### 11. Cập nhật điểm môn học
+PUT http://localhost:8080/api/courses/1
+Content-Type: application/json
+
+{
+  "name": "Toán Cao Cấp",
+  "score": 9.0
+}
+
+### 12. Tìm kiếm môn học theo tên
+GET http://localhost:8080/api/courses/search?name=Toán
+Content-Type: application/json
+
+### 13. Tìm môn học theo điểm số
+GET http://localhost:8080/api/courses/score/8.5
+Content-Type: application/json
+
+### 14. Xóa môn học
+DELETE http://localhost:8080/api/courses/1
+
+#==============================================
+# MODULE QUẢN LÝ NGÂN HÀNG
+#==============================================
+
+### 15. Lấy danh sách tất cả tài khoản
+GET http://localhost:8080/api/accounts
+Content-Type: application/json
+
+### 16. Tạo tài khoản ngân hàng mới
+POST http://localhost:8080/api/accounts
+Content-Type: application/json
+
+{
+  "customerName": "Trần Thị Bình",
+  "email": "binhtran@email.com",
+  "phone": "0987654321",
+  "balance": 1000000
+}
+
+### 17. Lấy thông tin tài khoản theo ID
+GET http://localhost:8080/api/accounts/1
+Content-Type: application/json
+
+### 18. Cập nhật thông tin tài khoản (không thay đổi số dư)
+PUT http://localhost:8080/api/accounts/1
+Content-Type: application/json
+
+{
+  "customerName": "Trần Thị Bình",
+  "email": "binhtran.new@email.com",
+  "phone": "0987654322"
+}
+
+### 19. Xóa tài khoản
+DELETE http://localhost:8080/api/accounts/1
+
+#==============================================
+# QUẢN LÝ GIAO DỊCH
+#==============================================
+
+### 20. Lấy danh sách tất cả giao dịch
+GET http://localhost:8080/api/transactions
+Content-Type: application/json
+
+### 21. Gửi tiền (Deposit)
+POST http://localhost:8080/api/transactions/deposit
+Content-Type: application/json
+
+{
+  "accID": 1,
+  "transMoney": 500000
+}
+
+### 22. Rút tiền (Withdraw)
+POST http://localhost:8080/api/transactions/withdraw
+Content-Type: application/json
+
+{
+  "accID": 1,
+  "transMoney": 200000
+}
+
+### 23. Thực hiện giao dịch tùy chỉnh
+POST http://localhost:8080/api/transactions
+Content-Type: application/json
+
+{
+  "accID": 1,
+  "transMoney": 300000,
+  "transType": 1
+}
+
+### 24. Lấy lịch sử giao dịch theo tài khoản
+GET http://localhost:8080/api/transactions/account/1
+Content-Type: application/json
+
+### 25. Lấy thông tin giao dịch theo ID
+GET http://localhost:8080/api/transactions/1
+Content-Type: application/json
+
+#==============================================
+# TEST CASES MẪU
+#==============================================
+
+### Test Case 1: Tạo sinh viên và thêm môn học
+# Bước 1: Tạo sinh viên
+POST http://localhost:8080/api/students
+Content-Type: application/json
+
+{
+  "name": "Lê Văn Cường",
+  "address": "789 Đường GHI, Quận 3, TP.HCM",
+  "phone": "0912345678",
+  "dob": "2000-12-20"
+}
+
+###
+# Bước 2: Thêm môn học cho sinh viên (thay studentId bằng ID sinh viên vừa tạo)
+POST http://localhost:8080/api/courses
+Content-Type: application/json
+
+{
+  "name": "Lập Trình Java",
+  "score": 8.0,
+  "studentId": 2
+}
+
+###
+# Bước 3: Thêm môn học thứ 2
+POST http://localhost:8080/api/courses
+Content-Type: application/json
+
+{
+  "name": "Cơ Sở Dữ Liệu",
+  "score": 9.5,
+  "studentId": 2
+}
+
+### Test Case 2: Tạo tài khoản và thực hiện giao dịch
+# Bước 1: Tạo tài khoản
+POST http://localhost:8080/api/accounts
+Content-Type: application/json
+
+{
+  "customerName": "Phạm Văn Đức",
+  "email": "ducpham@email.com",
+  "phone": "0923456789",
+  "balance": 2000000
+}
+
+###
+# Bước 2: Gửi tiền
+POST http://localhost:8080/api/transactions/deposit
+Content-Type: application/json
+
+{
+  "accID": 2,
+  "transMoney": 1000000
+}
+
+###
+# Bước 3: Rút tiền
+POST http://localhost:8080/api/transactions/withdraw
+Content-Type: application/json
+
+{
+  "accID": 2,
+  "transMoney": 500000
+}
+
+###
+# Bước 4: Kiểm tra lịch sử giao dịch
+GET http://localhost:8080/api/transactions/account/2
+Content-Type: application/json 

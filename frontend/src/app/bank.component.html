@@ -1,0 +1,187 @@
+<h2>Quản Lý Ngân Hàng</h2>
+
+<table border="1" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td colspan="2">
+      <button type="button" (click)="showAccountForm = !showAccountForm">
+        {{ showAccountForm ? "Hủy" : "Tạo Tài Khoản" }}
+      </button>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+<!-- Form Tạo/Sửa Tài Khoản -->
+<div *ngIf="showAccountForm">
+  <h3>{{ editingAccount ? "Sửa Tài Khoản" : "Tạo Tài Khoản Mới" }}</h3>
+  <form (ngSubmit)="saveAccount()" #accountForm="ngForm">
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr>
+        <td><strong>Tên khách hàng *</strong></td>
+        <td>
+          <input
+            type="text"
+            [(ngModel)]="currentAccount.customerName"
+            name="customerName"
+            required
+            size="30"
+          />
+        </td>
+        <td><strong>Email</strong></td>
+        <td>
+          <input
+            type="email"
+            [(ngModel)]="currentAccount.email"
+            name="email"
+            size="30"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Số điện thoại</strong></td>
+        <td>
+          <input
+            type="text"
+            [(ngModel)]="currentAccount.phone"
+            name="phone"
+            size="15"
+          />
+        </td>
+        <td><strong>Số dư ban đầu</strong></td>
+        <td>
+          <input
+            type="number"
+            [(ngModel)]="currentAccount.balance"
+            name="balance"
+            min="0"
+            size="15"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4" align="center">
+          <button type="submit" [disabled]="!accountForm.form.valid">
+            {{ editingAccount ? "Cập Nhật" : "Tạo" }} Tài Khoản
+          </button>
+          <button type="button" (click)="cancelAccountForm()">Hủy</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<br />
+
+<!-- Danh sách tài khoản -->
+<h3>Danh Sách Tài Khoản</h3>
+<table border="1" cellpadding="5" cellspacing="0" width="100%">
+  <thead>
+    <tr bgcolor="#f0f0f0">
+      <th>Mã TK</th>
+      <th>Tên Khách Hàng</th>
+      <th>Email</th>
+      <th>Số ĐT</th>
+      <th>Số Dư</th>
+      <th>Thao Tác</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let account of accounts">
+      <td>{{ account.accID }}</td>
+      <td>{{ account.customerName }}</td>
+      <td>{{ account.email }}</td>
+      <td>{{ account.phone }}</td>
+      <td align="right">
+        {{ account.balance | currency : "VND" : "symbol" : "1.0-0" }}
+      </td>
+      <td>
+        <button (click)="editAccount(account)">Sửa</button>
+        <button (click)="deleteAccount(account.accID!)">Xóa</button>
+        <button (click)="showTransactionForm(account)">Giao Dịch</button>
+        <button (click)="viewTransactions(account)">Lịch Sử</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br />
+
+<!-- Form Giao Dịch -->
+<div *ngIf="showTransactionFormFlag && selectedAccount">
+  <hr />
+  <h3>Giao Dịch Cho Tài Khoản: {{ selectedAccount.customerName }}</h3>
+  <form (ngSubmit)="performTransaction()" #transactionForm="ngForm">
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr>
+        <td><strong>Loại giao dịch *</strong></td>
+        <td>
+          <select
+            [(ngModel)]="currentTransaction.transType"
+            name="transType"
+            required
+          >
+            <option value="">Chọn loại</option>
+            <option value="1">Nạp tiền</option>
+            <option value="2">Rút tiền</option>
+          </select>
+        </td>
+        <td><strong>Số tiền *</strong></td>
+        <td>
+          <input
+            type="number"
+            [(ngModel)]="currentTransaction.transMoney"
+            name="amount"
+            required
+            min="1000"
+            step="1000"
+            size="15"
+          />
+        </td>
+        <td>
+          <button type="submit" [disabled]="!transactionForm.form.valid">
+            Thực Hiện Giao Dịch
+          </button>
+          <button type="button" (click)="cancelTransaction()">Hủy</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<br />
+
+<!-- Lịch sử giao dịch -->
+<div *ngIf="selectedAccount && showTransactionHistory">
+  <hr />
+  <h3>Lịch Sử Giao Dịch - {{ selectedAccount.customerName }}</h3>
+  <table border="1" cellpadding="5" cellspacing="0" width="100%">
+    <thead>
+      <tr bgcolor="#f0f0f0">
+        <th>Mã GD</th>
+        <th>Loại</th>
+        <th>Số Tiền</th>
+        <th>Ngày Giao Dịch</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let transaction of accountTransactions">
+        <td>{{ transaction.transID }}</td>
+        <td>
+          <span [style.color]="transaction.transType === 1 ? 'green' : 'red'">
+            {{ transaction.transType === 1 ? "Nạp tiền" : "Rút tiền" }}
+          </span>
+        </td>
+        <td align="right">
+          {{ transaction.transMoney | currency : "VND" : "symbol" : "1.0-0" }}
+        </td>
+        <td>{{ transaction.dateOfTrans | date : "dd/MM/yyyy HH:mm" }}</td>
+      </tr>
+      <tr *ngIf="accountTransactions.length === 0">
+        <td colspan="4" align="center"><em>Chưa có giao dịch nào</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <br />
+  <button (click)="closeTransactionHistory()">Đóng Lịch Sử</button>
+</div>
