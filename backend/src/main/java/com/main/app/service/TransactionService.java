@@ -20,10 +20,7 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
     
     @Autowired
-    private AccountRepository accountRepository;
-    
-    @Autowired
-    private AccountService accountService;
+    private AccountRepository accountRepository; 
     
     public List<TransactionDTO> getAllTransactions() {
         return transactionRepository.findAll().stream()
