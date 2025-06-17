@@ -38,6 +38,8 @@ export class StudentComponent implements OnInit {
   currentCourse: Course = { name: '', score: 0 };
   showStudentForm = false;
   editingStudent = false;
+  editingCourse = false;
+  showCourseForm = false;
   searchTerm = '';
   showCourseDetail = false;
 
@@ -116,6 +118,7 @@ export class StudentComponent implements OnInit {
     this.selectedStudent = student;
     this.showCourseDetail = true;
     this.showStudentForm = false;
+    this.cancelCourseForm();
     this.loadStudentCourses(student.id!);
   }
 
@@ -131,17 +134,71 @@ export class StudentComponent implements OnInit {
   saveCourse() {
     if (this.selectedStudent) {
       this.currentCourse.studentId = this.selectedStudent.id;
-      this.http
-        .post<Course>(`${this.apiUrl}/courses`, this.currentCourse)
-        .subscribe({
-          next: () => {
-            this.loadStudentCourses(this.selectedStudent!.id!);
-            this.loadStudents();
-            this.currentCourse = { name: '', score: 0 };
-          },
-          error: (error) => console.error('Lỗi tạo khóa học:', error),
-        });
+
+      if (this.editingCourse && this.currentCourse.id) {
+        // Cập nhật khóa học qua API PUT /api/courses/{id}
+        this.http
+          .put<Course>(
+            `${this.apiUrl}/courses/${this.currentCourse.id}`,
+            this.currentCourse
+          )
+          .subscribe({
+            next: () => {
+              this.loadStudentCourses(this.selectedStudent!.id!);
+              this.loadStudents();
+              this.cancelCourseForm();
+              alert('Cập nhật khóa học thành công!');
+            },
+            error: (error) => {
+              console.error('Lỗi cập nhật khóa học:', error);
+              alert(
+                'Lỗi cập nhật khóa học: ' +
+                  (error.error?.message || error.message)
+              );
+            },
+          });
+      } else {
+        // Tạo khóa học mới
+        this.http
+          .post<Course>(`${this.apiUrl}/courses`, this.currentCourse)
+          .subscribe({
+            next: () => {
+              this.loadStudentCourses(this.selectedStudent!.id!);
+              this.loadStudents();
+              this.cancelCourseForm();
+              alert('Thêm khóa học thành công!');
+            },
+            error: (error) => {
+              console.error('Lỗi tạo khóa học:', error);
+              alert(
+                'Lỗi tạo khóa học: ' + (error.error?.message || error.message)
+              );
+            },
+          });
+      }
     }
+  }
+
+  editCourse(course: Course) {
+    this.currentCourse = { ...course };
+    this.editingCourse = true;
+    this.showCourseForm = true;
+  }
+
+  showAddCourseForm() {
+    this.currentCourse = {
+      name: '',
+      score: 0,
+      studentId: this.selectedStudent?.id,
+    };
+    this.editingCourse = false;
+    this.showCourseForm = true;
+  }
+
+  cancelCourseForm() {
+    this.showCourseForm = false;
+    this.editingCourse = false;
+    this.currentCourse = { name: '', score: 0 };
   }
 
   deleteCourse(id: number) {
@@ -166,5 +223,6 @@ export class StudentComponent implements OnInit {
     this.showCourseDetail = false;
     this.selectedStudent = null;
     this.selectedStudentCourses = [];
+    this.cancelCourseForm();
   }
 }

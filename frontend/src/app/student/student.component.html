@@ -130,49 +130,61 @@
   <hr />
   <h3>Khóa Học Của {{ selectedStudent.name }}</h3>
 
-  <!-- Form thêm khóa học -->
-  <h4>Thêm Khóa Học Mới</h4>
-  <form (ngSubmit)="saveCourse()" #courseForm="ngForm">
-    <table border="1" cellpadding="5" cellspacing="0">
-      <tr>
-        <td><strong>Tên môn học *</strong></td>
-        <td>
-          <input
-            type="text"
-            [(ngModel)]="currentCourse.name"
-            name="courseName"
-            required
-            size="30"
-          />
-        </td>
-        <td><strong>Điểm số</strong></td>
-        <td>
-          <input
-            type="number"
-            [(ngModel)]="currentCourse.score"
-            name="score"
-            min="0"
-            max="10"
-            step="0.1"
-            size="10"
-          />
-        </td>
-        <td>
-          <button type="submit" [disabled]="!courseForm.form.valid">
-            Thêm Môn Học
-          </button>
-        </td>
-      </tr>
-    </table>
-  </form>
+  <!-- Button thêm khóa học -->
+  <button type="button" (click)="showAddCourseForm()">
+    {{ showCourseForm && !editingCourse ? "Hủy" : "Thêm Khóa Học Mới" }}
+  </button>
 
-  <br />
+  <br /><br />
+
+  <!-- Form thêm/sửa khóa học -->
+  <div *ngIf="showCourseForm">
+    <h4>{{ editingCourse ? "Sửa Khóa Học" : "Thêm Khóa Học Mới" }}</h4>
+    <form (ngSubmit)="saveCourse()" #courseForm="ngForm">
+      <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+          <td><strong>Tên môn học *</strong></td>
+          <td>
+            <input
+              type="text"
+              [(ngModel)]="currentCourse.name"
+              name="courseName"
+              required
+              size="30"
+              placeholder="Nhập tên môn học"
+            />
+          </td>
+          <td><strong>Điểm số</strong></td>
+          <td>
+            <input
+              type="number"
+              [(ngModel)]="currentCourse.score"
+              name="score"
+              min="0"
+              max="10"
+              step="0.1"
+              size="10"
+              placeholder="0.0 - 10.0"
+            />
+          </td>
+          <td>
+            <button type="submit" [disabled]="!courseForm.form.valid">
+              {{ editingCourse ? "Cập Nhật" : "Thêm" }} Môn Học
+            </button>
+            <button type="button" (click)="cancelCourseForm()">Hủy</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <br />
+  </div>
 
   <!-- Danh sách khóa học -->
   <h4>Danh Sách Môn Học</h4>
   <table border="1" cellpadding="5" cellspacing="0" width="100%">
     <thead>
       <tr bgcolor="#f0f0f0">
+        <th>Mã Môn</th>
         <th>Tên Môn Học</th>
         <th>Điểm Số</th>
         <th>Thao Tác</th>
@@ -180,11 +192,16 @@
     </thead>
     <tbody>
       <tr *ngFor="let course of selectedStudentCourses">
+        <td>{{ course.id }}</td>
         <td>{{ course.name }}</td>
-        <td>{{ course.score }}</td>
+        <td>{{ course.score | number : "1.1-1" }}</td>
         <td>
+          <button (click)="editCourse(course)">Sửa</button>
           <button (click)="deleteCourse(course.id!)">Xóa</button>
         </td>
+      </tr>
+      <tr *ngIf="selectedStudentCourses.length === 0">
+        <td colspan="4" align="center"><em>Chưa có môn học nào</em></td>
       </tr>
     </tbody>
   </table>

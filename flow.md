@@ -89,7 +89,7 @@ graph TD
 
 - **Mở tài khoản mới**: Tạo tài khoản với thông tin khách hàng và số dư ban đầu
 - **Cập nhật thông tin**: Chỉnh sửa thông tin cá nhân (không thay đổi số dư)
-- **Đóng tài khoản**: Xóa tài khoản và lịch sử giao dịch
+- **Xóa tài khoản**: Xóa tài khoản và lịch sử giao dịch
 
 #### 2. Xử Lý Giao Dịch
 
@@ -347,40 +347,3 @@ graph TD
     style G fill:#fff8e1
     style O fill:#e8f5e8
 ```
-
-## 🛡️ Xử Lý Lỗi và Validation
-
-### Validation Rules:
-
-1. **Sinh viên**:
-
-   - Tên: Bắt buộc, không để trống
-   - Ngày sinh: Format YYYY-MM-DD
-   - Số điện thoại: Tùy chọn, format hợp lệ
-
-2. **Môn học**:
-
-   - Tên môn: Bắt buộc
-   - Điểm số: 0-10, cho phép decimal
-
-3. **Tài khoản ngân hàng**:
-
-   - Tên khách hàng: Bắt buộc
-   - Email: Format email hợp lệ
-   - Số dư ban đầu: >= 0
-
-4. **Giao dịch**:
-   - Số tiền: > 0
-   - Loại giao dịch: 1 (Gửi) hoặc 2 (Rút)
-   - Rút tiền: Số dư phải đủ
-
-## 📈 Báo Cáo và Thống Kê
-
-Hệ thống cung cấp các thông tin thống kê real-time:
-
-- **Module Sinh viên**: GPA trung bình, phân bố xếp hạng, số lượng môn học
-- **Module Ngân hàng**: Tổng số dư, số lượng giao dịch, thống kê theo loại giao dịch
-
----
-
-**Hệ thống được thiết kế để đảm bảo tính nhất quán dữ liệu, hiệu suất cao và trải nghiệm người dùng tối ưu! 🚀**
