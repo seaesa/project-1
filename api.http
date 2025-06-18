@@ -1,0 +1,284 @@
+### API Testing cho Hệ thống Quản lý Sinh viên
+### Base URL: http://localhost:8080/api
+@base_url = http://localhost:8080/api
+#==============================================
+# MODULE QUẢN LÝ SINH VIÊN - MÔN HỌC
+#==============================================
+
+### 1. Lấy danh sách tất cả sinh viên
+GET {{base_url}}/students
+Content-Type: application/json
+
+# Response: 200 OK
+# [
+#   {
+#     "id": 1,
+#     "name": "Nguyễn Văn An",
+#     "address": "123 Đường ABC, Quận 1, TP.HCM",
+#     "phone": "0901234567",
+#     "dob": "2001-05-15",
+#     "courses": [
+#       {
+#         "id": 1,
+#         "name": "Toán Cao Cấp",
+#         "score": 8.5,
+#         "studentId": 1
+#       }
+#     ],
+#     "courseCount": 1,
+#     "gpa": 8.5,
+#     "rank": "Giỏi"
+#   }
+# ]
+
+### 2. Tạo sinh viên mới
+POST {{base_url}}/students
+Content-Type: application/json
+
+{
+  "name": "Nguyễn Văn An",
+  "address": "123 Đường ABC, Quận 1, TP.HCM",
+  "phone": "0901234567",
+  "dob": "2001-05-15"
+}
+
+# Response: 200 OK
+# {
+#   "id": 1,
+#   "name": "Nguyễn Văn An",
+#   "address": "123 Đường ABC, Quận 1, TP.HCM",
+#   "phone": "0901234567",
+#   "dob": "2001-05-15",
+#   "courses": null,
+#   "courseCount": 0,
+#   "gpa": null,
+#   "rank": null
+# }
+
+### 3. Lấy thông tin sinh viên theo ID
+GET {{base_url}}/students/1
+Content-Type: application/json
+
+# Response: 200 OK
+# {
+#   "id": 1,
+#   "name": "Nguyễn Văn An",
+#   "address": "123 Đường ABC, Quận 1, TP.HCM",
+#   "phone": "0901234567",
+#   "dob": "2001-05-15",
+#   "courses": [
+#     {
+#       "id": 1,
+#       "name": "Toán Cao Cấp",
+#       "score": 8.5,
+#       "studentId": 1
+#     }
+#   ],
+#   "courseCount": 1,
+#   "gpa": 8.5,
+#   "rank": "Giỏi"
+# }
+# Response: 404 Not Found (nếu không tìm thấy sinh viên)
+
+### 4. Cập nhật thông tin sinh viên
+PUT {{base_url}}/students/1
+Content-Type: application/json
+
+{
+  "name": "Nguyễn Văn An",
+  "address": "456 Đường DEF, Quận 2, TP.HCM",
+  "phone": "0901234568",
+  "dob": "2001-05-15"
+}
+
+# Response: 200 OK
+# {
+#   "id": 1,
+#   "name": "Nguyễn Văn An",
+#   "address": "456 Đường DEF, Quận 2, TP.HCM",
+#   "phone": "0901234568",
+#   "dob": "2001-05-15",
+#   "courses": [
+#     {
+#       "id": 1,
+#       "name": "Toán Cao Cấp",
+#       "score": 8.5,
+#       "studentId": 1
+#     }
+#   ],
+#   "courseCount": 1,
+#   "gpa": 8.5,
+#   "rank": "Giỏi"
+# }
+# Response: 404 Not Found (nếu không tìm thấy sinh viên)
+
+### 5. Tìm kiếm sinh viên theo tên
+GET {{base_url}}/students/search?name=An
+Content-Type: application/json
+
+# Response: 200 OK
+# [
+#   {
+#     "id": 1,
+#     "name": "Nguyễn Văn An",
+#     "address": "123 Đường ABC, Quận 1, TP.HCM",
+#     "phone": "0901234567",
+#     "dob": "2001-05-15",
+#     "courses": [
+#       {
+#         "id": 1,
+#         "name": "Toán Cao Cấp",
+#         "score": 8.5,
+#         "studentId": 1
+#       }
+#     ],
+#     "courseCount": 1,
+#     "gpa": 8.5,
+#     "rank": "Giỏi"
+#   }
+# ]
+
+### 6. Lấy danh sách môn học của sinh viên
+GET {{base_url}}/students/1/courses
+Content-Type: application/json
+
+# Response: 200 OK
+# [
+#   {
+#     "id": 1,
+#     "name": "Toán Cao Cấp",
+#     "score": 8.5,
+#     "studentId": 1
+#   },
+#   {
+#     "id": 2,
+#     "name": "Lập Trình Java",
+#     "score": 9.0,
+#     "studentId": 1
+#   }
+# ]
+
+### 7. Xóa sinh viên
+DELETE {{base_url}}/students/1
+
+# Response: 200 OK (xóa thành công)
+# Response: 404 Not Found (nếu không tìm thấy sinh viên)
+
+#==============================================
+# QUẢN LÝ MÔN HỌC
+#==============================================
+
+### 8. Lấy danh sách tất cả môn học
+GET {{base_url}}/courses
+Content-Type: application/json
+
+# Response: 200 OK
+# [
+#   {
+#     "id": 1,
+#     "name": "Toán Cao Cấp",
+#     "score": 8.5,
+#     "studentId": 1
+#   },
+#   {
+#     "id": 2,
+#     "name": "Lập Trình Java",
+#     "score": 9.0,
+#     "studentId": 1
+#   }
+# ]
+
+### 9. Tạo môn học mới cho sinh viên
+POST {{base_url}}/courses
+Content-Type: application/json
+
+{
+  "name": "Toán Cao Cấp",
+  "score": 8.5,
+  "studentId": 1
+}
+
+# Response: 200 OK
+# {
+#   "id": 1,
+#   "name": "Toán Cao Cấp",
+#   "score": 8.5,
+#   "studentId": 1
+# }
+
+### 10. Lấy thông tin môn học theo ID
+GET {{base_url}}/courses/1
+Content-Type: application/json
+
+# Response: 200 OK
+# {
+#   "id": 1,
+#   "name": "Toán Cao Cấp",
+#   "score": 8.5,
+#   "studentId": 1
+# }
+# Response: 404 Not Found (nếu không tìm thấy môn học)
+
+### 11. Cập nhật điểm môn học
+PUT {{base_url}}/courses/1
+Content-Type: application/json
+
+{
+  "name": "Toán Cao Cấp",
+  "score": 9.0
+}
+
+# Response: 200 OK
+# {
+#   "id": 1,
+#   "name": "Toán Cao Cấp",
+#   "score": 9.0,
+#   "studentId": 1
+# }
+# Response: 404 Not Found (nếu không tìm thấy môn học)
+
+### 12. Tìm kiếm môn học theo tên
+GET {{base_url}}/courses/search?name=Toán
+Content-Type: application/json
+
+# Response: 200 OK
+# [
+#   {
+#     "id": 1,
+#     "name": "Toán Cao Cấp",
+#     "score": 8.5,
+#     "studentId": 1
+#   },
+#   {
+#     "id": 3,
+#     "name": "Toán Rời Rạc",
+#     "score": 7.5,
+#     "studentId": 2
+#   }
+# ]
+
+### 13. Tìm môn học theo điểm số
+GET {{base_url}}/courses/score/8.5
+Content-Type: application/json
+
+# Response: 200 OK
+# [
+#   {
+#     "id": 1,
+#     "name": "Toán Cao Cấp",
+#     "score": 8.5,
+#     "studentId": 1
+#   },
+#   {
+#     "id": 4,
+#     "name": "Cơ Sở Dữ Liệu",
+#     "score": 8.5,
+#     "studentId": 2
+#   }
+# ]
+
+### 14. Xóa môn học
+DELETE {{base_url}}/courses/1
+
+# Response: 200 OK (xóa thành công)
+# Response: 404 Not Found (nếu không tìm thấy môn học)
