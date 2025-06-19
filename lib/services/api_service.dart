@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/student.dart';
+import '../config/app_config.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8080/api';
+  // Sử dụng config từ AppConfig
+  static String get baseUrl => AppConfig.getBaseUrl();
 
   // Student APIs
 
